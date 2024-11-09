@@ -2,33 +2,25 @@
 #define BAUD 9600
 #define DHT_PIN 0 // DHT pin connected to PIN C0
 
+uint8_t data[5];                            // Array holds the 5 data bytes recorded by DHT11
+
 void setup() {
-  // Initialise peripherals and components
+  // Initialise UART and DHT11 and take measurement
   uart_init(BAUD);
   DHT11_init();
+  DHT11_display();
+
+  // Initialise 7 segment display and display timer
+  timer0_init();
   display_init();
+
+  // Enable interrupts
+  sei();
 }
 
-void loop() {
-  uint8_t data[5];               // Array holds the 5 data bytes recorded by DHT11
-  
-  if (DHT11_read(data)) {
-    // Data is valid, print temperature and humidity
+void loop() {}
 
-    // Create buffer for output string
-    char buffer[50];
-
-    uint8_t humidity = data[0];       // Humidity whole number byte == 0
-    uint8_t temperature = data[2];    // Temperature whole number byte == 2
-
-    // Format and send message
-    snprintf(buffer, sizeof(buffer), "Humidity: %d%%, Temperature: %d°C\r\n", humidity, temperature);
-    uart_transmit_array(buffer);
-    load_digits(temperature);
-    display_digit();
-  } else {
-    // If the read failed, print a failure message
-    uart_transmit_array("Failed to read data from DHT11 sensor\r\n");
-  }
-  delay(2000);                        // Wait before the next reading
+// This interrupt ensures all digits of the 7 segment display are on at the same time.
+ISR(TIMER0_COMPA_vect) {
+	display_digit();
 }
