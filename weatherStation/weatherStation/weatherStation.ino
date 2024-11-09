@@ -1,11 +1,12 @@
 #define F_CPU 16000000
 #define BAUD 9600
-#define DHT_PIN 2 // DHT pin connected to PIN D2
+#define DHT_PIN 0 // DHT pin connected to PIN C0
 
 void setup() {
-  // Initialise UART and DHT11
+  // Initialise peripherals and components
   uart_init(BAUD);
   DHT11_init();
+  display_init();
 }
 
 void loop() {
@@ -22,7 +23,9 @@ void loop() {
 
     // Format and send message
     snprintf(buffer, sizeof(buffer), "Humidity: %d%%, Temperature: %d°C\r\n", humidity, temperature);
-    uart_transmit_array(buffer);  
+    uart_transmit_array(buffer);
+    load_digits(temperature);
+    display_digit();
   } else {
     // If the read failed, print a failure message
     uart_transmit_array("Failed to read data from DHT11 sensor\r\n");
