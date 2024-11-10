@@ -65,7 +65,7 @@ void DHT11_display(uint8_t *temperature, uint8_t *humidity) {
     char buffer[50];
 
     // Format and send message
-    snprintf(buffer, sizeof(buffer), "Humidity: %d%%, Temperature: %d°C\r\n", humidity, temperature);
+    snprintf(buffer, sizeof(buffer), "Humidity: %d%%, Temperature: %d°C\r\n", *humidity, *temperature);
     uart_transmit_array(buffer);
   } else {
     // If the read failed, print a failure message
