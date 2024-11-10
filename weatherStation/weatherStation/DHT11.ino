@@ -55,22 +55,18 @@ bool DHT11_read(uint8_t *data) {
 }
 
 // Function to display data from the DHT11 sensor
-void DHT11_display() {
+void DHT11_display(uint8_t *temperature, uint8_t *humidity) {
   if (DHT11_read(data)) {
-    // Data is valid, print temperature and humidity
+    // Data is valid, store temperature and humidity values
+    *humidity = data[0];       // Humidity whole number byte == 0
+    *temperature = data[2];    // Temperature whole number byte == 2
 
     // Create buffer for output string
     char buffer[50];
 
-    uint8_t humidity = data[0];       // Humidity whole number byte == 0
-    uint8_t temperature = data[2];    // Temperature whole number byte == 2
-
     // Format and send message
     snprintf(buffer, sizeof(buffer), "Humidity: %d%%, Temperature: %d°C\r\n", humidity, temperature);
     uart_transmit_array(buffer);
-
-    // Load results into display buffer
-    load_digits(temperature);
   } else {
     // If the read failed, print a failure message
     uart_transmit_array("Failed to read data from DHT11 sensor\r\n");

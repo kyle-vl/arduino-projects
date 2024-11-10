@@ -1,4 +1,6 @@
-// Define bit patterns for 0..9 and C
+#include "DisplayState.h" 
+
+// Define bit patterns for 0..9 and chars 'C' and 'H'
 const uint8_t digit_patterns[] = {
   0x3F, // 0
   0x06, // 1
@@ -10,7 +12,8 @@ const uint8_t digit_patterns[] = {
   0x07, // 7
   0x7F, // 8
   0x6F, // 9
-  0x39  // C
+  0x39, // C
+  0x76  // H
 };
 
 // 4 digits to be displayed
@@ -29,11 +32,19 @@ void display_init() {
 }
 
 // Function that stores a given number in digit array
-void load_digits(uint8_t number){
+void load_digits(uint8_t number, DisplayState displayState){
 	for (int i = 2; i >= 0; i--) {
 		digits[i] = digit_patterns[number % 10];       // Get rightmost digit
 		number /= 10;                                  // Move to the next digit
 	}
+
+  if (displayState == DISPLAY_TEMPERATURE) {
+    // Set last digit to 'C' for temperature
+    digits[3] = digit_patterns[10];
+  } else if (displayState == DISPLAY_HUMIDITY) {
+    // Set last digit to 'H' for humidity
+    digits[3] = digit_patterns[11];
+  }
 }
 
 void display_digit() {
